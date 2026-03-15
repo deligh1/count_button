@@ -1,18 +1,21 @@
 let count = 0;
 
-btn.onclick = async () => {
+exports.handler = async (event) => {
 
-    count++;
-    countText.textContent = count;
-
-    localStorage.setItem("count", count);
-
-    try{
-        await fetch("/.netlify/functions/counter", {
-            method: "POST"
-        });
-    }catch(e){
-        console.error(e);
+    if (event.httpMethod !== "POST") {
+        return {
+            statusCode: 405,
+            body: "Method Not Allowed"
+        };
     }
 
+    return {
+        statusCode: 200,
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            message: "count received"
+        })
+    };
 };
