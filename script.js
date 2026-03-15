@@ -15,15 +15,15 @@ countText.textContent = count;
 btn.onclick = async () => {
 
     count++;
-
     countText.textContent = count;
 
-    // localStorageに保存（ブラウザ閉じても残る）
     localStorage.setItem("count", count);
 
-    // Netlifyに送信
-    await fetch("/.netlify/functions/counter", {
-        method:"POST"
-    });
-
+    try{
+        await fetch("/.netlify/functions/counter", {
+            method: "POST"
+        });
+    }catch(e){
+        console.error(e);
+    }
 };
