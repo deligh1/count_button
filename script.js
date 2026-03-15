@@ -20,7 +20,7 @@ btn.onclick = async () => {
     localStorage.setItem("count", count);
 
     try{
-        await fetch("./netlify/functions/counter", {
+        await fetch("/.netlify/functions/counter", {
             method: "POST"
         });
     }catch(e){
