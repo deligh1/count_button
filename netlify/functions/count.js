@@ -1,45 +1,31 @@
 const { createClient } = require("@supabase/supabase-js");
 
 const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_KEY
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_KEY
 );
 
 exports.handler = async (event) => {
 
-    if(event.httpMethod === "GET"){
+  const { data } = await supabase
+    .from("counter")
+    .select("value")
+    .eq("id",1)
+    .maybeSingle();
 
-        const { data } = await supabase
-            .from("counter")
-            .select("value")
-            .eq("id",1)
-            .single();
+  let value = data?.value ?? 0;
 
-        return {
-            statusCode:200,
-            body:JSON.stringify({total:data.value})
-        };
-    }
+  if(event.httpMethod === "POST"){
 
-    if(event.httpMethod === "POST"){
+    value++;
 
-        const { data } = await supabase
-            .from("counter")
-            .select("value")
-            .eq("id",1)
-            .single();
+    await supabase
+      .from("counter")
+      .upsert({id:1,value:value});
+  }
 
-        const newValue = data.value + 1;
-
-        await supabase
-            .from("counter")
-            .update({value:newValue})
-            .eq("id",1);
-
-        return {
-            statusCode:200,
-            body:JSON.stringify({total:newValue})
-        };
-    }
-
+  return {
+    statusCode:200,
+    body:JSON.stringify({total:value})
+  };
 };
