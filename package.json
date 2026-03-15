@@ -1,0 +1,6 @@
+{
+  "name": "countbutton",
+  "dependencies": {
+    "@supabase/supabase-js": "^2"
+  }
+}
