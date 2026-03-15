@@ -7,21 +7,37 @@ const supabase = createClient(
 
 exports.handler = async (event) => {
 
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("counter")
     .select("value")
     .eq("id",1)
-    .maybeSingle();
+    .single();
 
-  let value = data?.value ?? 0;
+  if(error){
+    return {
+      statusCode:500,
+      body:JSON.stringify(error)
+    };
+  }
+
+  let value = data.value;
 
   if(event.httpMethod === "POST"){
 
     value++;
 
-    await supabase
+    const { error:updateError } = await supabase
       .from("counter")
-      .upsert({id:1,value:value});
+      .update({value:value})
+      .eq("id",1);
+
+    if(updateError){
+      return {
+        statusCode:500,
+        body:JSON.stringify(updateError)
+      };
+    }
+
   }
 
   return {
